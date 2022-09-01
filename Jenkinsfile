@@ -18,6 +18,7 @@ pipeline {
                 }
             }
             steps {
+		echo "PATH is: ${env.PATH}"
                 echo 'Retrieve source from github. run npm install and npm test' 
                 git branch: 'main',
                     url: 'https://github.com/movinglightspeed/devops_ui_svc.git'
@@ -30,7 +31,7 @@ pipeline {
                 echo 'Testing completed'   
             }
         }
-   stage('SonarQube analysis') {
+        stage('SonarQube analysis') {
       steps {
         script {
           def scannerHome = tool 'sonarqube';

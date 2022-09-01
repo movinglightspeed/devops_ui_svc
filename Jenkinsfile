@@ -23,7 +23,33 @@ pipeline {
                     url: 'https://github.com/movinglightspeed/devops_ui_svc.git'
                 echo 'repo files'
                 sh 'ls -a'
+		echo 'install dependencies'
+                sh 'npm install'
+                echo 'Run tests'
+                sh 'npm test'
+                echo 'Testing completed'   
             }
+        }
+   stage('SonarQube analysis') {
+      steps {
+        script {
+          def scannerHome = tool 'sonarqube';
+          withSonarQubeEnv('sonarqube') {
+            sh "./sonar-scanner-4.7.0.2747-linux/bin/sonar-scanner"
+          }
+         }
+        }
+       }
+    stage("Quality gate") {
+      steps {
+        script {
+          def qualitygate = waitForQualityGate()
+          sleep(10)
+          if (qualitygate.status != "OK") {
+            waitForQualityGate abortPipeline: true
+           }
+          }
+         }
         }
         stage('Building image') {
             steps{
